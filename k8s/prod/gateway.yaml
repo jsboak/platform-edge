@@ -1,0 +1,22 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: shop-external-https
+  namespace: boutique-prod
+spec:
+  gatewayClassName: gke-l7-global-external-managed
+  listeners:
+    - name: https
+      protocol: HTTPS
+      port: 443
+      hostname: shop.example.com
+      tls:
+        mode: Terminate
+        options:
+          networking.gke.io/pre-shared-certs: boutique-shop-cert
+      allowedRoutes:
+        namespaces:
+          from: Same
+  addresses:
+    - type: NamedAddress
+      value: boutique-shop-ip
