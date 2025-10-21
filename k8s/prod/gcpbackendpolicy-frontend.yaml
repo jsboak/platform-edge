@@ -1,0 +1,12 @@
+apiVersion: networking.gke.io/v1
+kind: GCPBackendPolicy
+metadata:
+  name: frontend
+  namespace: boutique-prod
+spec:
+  default:
+    securityPolicy: boutique-edge-prod
+  targetRef:
+    group: ""
+    kind: Service
+    name: frontend
