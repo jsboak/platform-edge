@@ -57,6 +57,29 @@ resource "google_compute_security_policy" "boutique_edge_prod" {
     }
   }
 
+  # Per-IP rate limit. Preview only: matches are logged, not enforced.
+  rule {
+    action      = "throttle"
+    priority    = 2000
+    preview     = true
+    description = "Per-IP rate limit"
+    match {
+      versioned_expr = "SRC_IPS_V1"
+      config {
+        src_ip_ranges = ["*"]
+      }
+    }
+    rate_limit_options {
+      conform_action = "allow"
+      exceed_action  = "deny(429)"
+      enforce_on_key = "IP"
+      rate_limit_threshold {
+        count        = 600
+        interval_sec = 60
+      }
+    }
+  }
+
   rule {
     action      = "allow"
     priority    = 2147483647
