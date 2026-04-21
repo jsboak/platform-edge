@@ -92,3 +92,34 @@ resource "google_compute_security_policy" "boutique_edge_prod" {
     }
   }
 }
+
+# Office-only policy. Not referenced by any backend policy yet.
+# TODO attach this to the internal tools backend once it exists.
+resource "google_compute_security_policy" "boutique_edge_strict" {
+  name        = "boutique-edge-strict"
+  description = "Allow the office range only"
+
+  rule {
+    action      = "allow"
+    priority    = 1000
+    description = "Office range"
+    match {
+      versioned_expr = "SRC_IPS_V1"
+      config {
+        src_ip_ranges = [var.office_cidr]
+      }
+    }
+  }
+
+  rule {
+    action      = "deny(403)"
+    priority    = 2147483647
+    description = "Default deny"
+    match {
+      versioned_expr = "SRC_IPS_V1"
+      config {
+        src_ip_ranges = ["*"]
+      }
+    }
+  }
+}
